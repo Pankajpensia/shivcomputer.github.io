@@ -44,17 +44,38 @@
 <center>
   <h1>Edit Products</h1>
 </center>
+<div class="mb-3" >
+  <img src=""	style="width:200px; height:200px;" id="EditFilePreview"></img>
+</div>
 <div class="mb-3">
   <label for="EditName" class="form-label">Product Name</label>
-  <input type="email" class="form-control" id="EditName" placeholder="Example:- Mobile, Computer">
+  <input type="text" class="form-control" id="EditName" placeholder="Example:- Mobile, Computer">
 </div>
 <div class="mb-3">
   <label for="EditPrice" class="form-label">Product Price</label>
   <input type="tel" class="form-control" id="EditPrice" placeholder="Example:- 100">
 </div>
-<div class="mb-3" >
-  <img src=""	style="width:200px; height:200px;" id="EditFilePreview"></img>
+<div class="mb-3">
+  <label for="EditType" class="form-label">Product Type</label>
+  <input type="text" class="form-control" id="EditType" placeholder="Example:- wired, wireless">
 </div>
+<div class="mb-3">
+  <label for="EditColor" class="form-label">Product Color</label>
+  <input type="text" class="form-control" id="EditColor" placeholder="Example:- white, black">
+</div>
+<div class="mb-3">
+  <label for="EditMetarial" class="form-label">Product Material</label>
+  <input type="text" class="form-control" id="EditMetarial" placeholder="Example:- plastic, any">
+</div>
+<div class="mb-3">
+  <label for="EditBrand" class="form-label">Product Brand</label>
+  <input type="text" class="form-control" id="EditBrand" placeholder="Example:- samsung, lenovo">
+</div>
+<div class="mb-3">
+  <label for="EditDisc" class="form-label">Product Discription</label>
+  <textarea class="form-control" id="EditDisc" rows="3"></textarea>
+</div>
+
 <button type="button" id="EditBtn" class="btn btn-primary ">Edit</button>
 </div>
       </div>
@@ -102,21 +123,50 @@ Welcome
 	
 	<div id="AdminPanel" style="display:none;">
 	
-	<div class="container">
+	<div class="container g-3">
 <center>
   <h1>Add Products</h1>
 </center>
+<label>Select Product Categories</label>
+<select class="form-select form-select-sm" id="categorySelect" aria-label="Small select example">
+  <option selected>All</option>
+  <option value="Laptop">Laptop</option>
+  <option value="Computer">Computer</option>
+  <option value="Camera">Camera</option>
+   <option value="Mobile">Mobile</option>
+     <option value="Assesories">Assesories</option>
+</select>
 <div class="mb-3">
   <label for="ProductName" class="form-label">Product Name</label>
-  <input type="email" class="form-control" id="ProductName" placeholder="Example:- Mobile, Computer">
+  <input type="text" class="form-control" id="ProductName" placeholder="Example:- Mobile, Computer">
 </div>
 <div class="mb-3">
   <label for="ProductPrice" class="form-label">Product Price</label>
   <input type="tel" class="form-control" id="ProductPrice" placeholder="Example:- 100">
 </div>
 <div class="mb-3">
+  <label for="ProductType" class="form-label">Product Type</label>
+  <input type="text" class="form-control" id="ProductType" placeholder="Example:- wired, wireless">
+</div>
+<div class="mb-3">
+  <label for="ProductColor" class="form-label">Product Color</label>
+  <input type="text" class="form-control" id="ProductColor" placeholder="Example:- white, black">
+</div>
+<div class="mb-3">
+  <label for="ProductMetarial" class="form-label">Product Material</label>
+  <input type="text" class="form-control" id="ProductMetarial" placeholder="Example:- plastic, any">
+</div>
+<div class="mb-3">
+  <label for="ProductBrand" class="form-label">Product Brand</label>
+  <input type="text" class="form-control" id="ProductBrand" placeholder="Example:- samsung, lenovo">
+</div>
+<div class="mb-3">
   <label for="ProductFile" class="form-label">Product Image</label>
   <input type="file" class="form-control" id="ProductFile" >
+</div>
+<div class="mb-3">
+  <label for="ProductDisc" class="form-label">Product Discription</label>
+  <textarea class="form-control" id="ProductDisc" rows="3"></textarea>
 </div>
 <button type="button" id="ProductAddBtn" class="btn btn-primary ">Add</button>
 </div>
@@ -127,7 +177,7 @@ Welcome
 <h1>All Product's See Here..</h1>
 </center>
 
-<div id="ProductPage" style="display:flex; flex-wrap:wrap;">
+<div id="ProductPage" style="position:absolute; display:flex; flex-wrap:wrap;">
 
 </div>
 
@@ -139,14 +189,24 @@ Welcome
  
 
    <script type="module">
+   
+   
+
    let base64Image
    // Selecting DOM elements
 const AdminPanel = document.querySelector("#AdminPanel");
 const loginSection = document.querySelector("#loginSection");
 const submitButton = document.querySelector("#submitBtn");
+
 const ProductName = document.getElementById("ProductName");
 const ProductPrice = document.getElementById("ProductPrice");
+const ProductType = document.getElementById("ProductType");
+const ProductColor = document.getElementById("ProductColor");
+const ProductMetarial = document.getElementById("ProductMetarial");
+const ProductBrand = document.getElementById("ProductBrand");
 const ProductFile = document.getElementById("ProductFile");
+
+
 const ProductAddBtn = document.getElementById("ProductAddBtn");
 const ProductPage = document.getElementById("ProductPage");
 const imageInput = document.getElementById('ProductFile');
@@ -172,7 +232,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-// Event listener for submit button
 submitButton.addEventListener("click", async function (e) {
   e.preventDefault();
   const mobileNumber = document.getElementById("mobileNumber").value + "@gmail.com";
@@ -188,6 +247,7 @@ submitButton.addEventListener("click", async function (e) {
  loginSection.style.display = "none";
     AdminPanel.style.display = "block";
 
+
     // Local storage for the uploaded image
     imageInput.addEventListener("change", function () {
       if (imageInput.files.length > 0) {
@@ -202,12 +262,29 @@ submitButton.addEventListener("click", async function (e) {
         alert('Please select an image.');
       }
     });
+	
+	
+ const categorySelect = document.getElementById("categorySelect");
+
+        // Add an event listener to listen for changes in the select element
+        categorySelect.addEventListener("change", function() {
+            // Get the selected category value
+            const selectedCategory = categorySelect.value;
+
+            // Display the selected category in the console
+            console.log("Selected category: " + selectedCategory);
+        });
 
     // Function to submit the form
     function submitForm(e) {
       e.preventDefault();
       const Name = ProductName.value;
       const Price = ProductPrice.value;
+	  const Color = ProductColor.value;
+	  const Brand = ProductBrand.value;
+	  const Material = ProductMetarial.value;
+	  const Disc = ProductDisc;
+	  const Categories = categorySelect.value;
       let Image = base64Image
 
       if (Name && Price) {
@@ -215,6 +292,11 @@ submitButton.addEventListener("click", async function (e) {
         set(usersRef, {
           ProductName: Name,
           ProductPrice: Price,
+		  ProductColor: Color,
+		  ProductBrand: Brand,
+		  ProductMetarial: Material,
+		  ProductDisc: Disc,
+		  ProductCategories: Categories,
           ProductImage: base64Image
         }).then(() => {
           alert("Product Added Successfully");
@@ -242,13 +324,13 @@ submitButton.addEventListener("click", async function (e) {
 
         // Display data in the HTML
         ProductPage.innerHTML += `
-          <div class="card my-3 mx-3" style="width: 18rem;">
+          <div class="card my-3 mx-3" style="width: 150px;">
             <img src="${Image}" class="card-img-top" alt="">
             <div class="card-body">
               <h5 class="card-title">${Name}</h5>
               <h2 class="card-text">${Price}</h2>
               <a href="#" class="btn btn-danger" data-document-id="${documentId}" id="delBtn">Delete</a>
-              <a href="#" class="btn btn-success" data-document-id="${documentId}" id="editBtn"   data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</a>
+              <a href="#" class="btn btn-success my-1" data-document-id="${documentId}" id="editBtn"  data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</a>
             </div>
           </div>
         `;
@@ -274,23 +356,36 @@ submitButton.addEventListener("click", async function (e) {
           if (documentIdToEdit) {
              let ProductRef = ref(database, `Products/${documentIdToEdit}`);
 			
-				let EditName = document.getElementById("EditName")
-				let EditPrice = document.getElementById("EditPrice")
-				let EditBtn = document.getElementById("EditBtn");
-				let EditFilePreview = document.getElementById("EditFilePreview");
+			const EditName = document.getElementById("EditName");
+			const EditPrice = document.getElementById("EditPrice");
+			const EditType = document.getElementById("EditType");
+			const EditColor = document.getElementById("EditColor");
+			const EditMetarial = document.getElementById("EditMetarial");
+			const EditBrand = document.getElementById("EditBrand");
+			let EditDisc = document.getElementById("EditDisc");
+			let EditFilePreview = document.getElementById("EditFilePreview");
 		
 			 onValue(ProductRef, (snapshot)=>{
 			    let data = snapshot.val();
 				
 				EditName.value = data.ProductName;
 				EditPrice.value = data.ProductPrice;
+				EditColor.value = data.ProductColor;
+				EditBrand.value = data.ProductBrand;
+				EditMetarial.value = data.ProductMetarial;
+				EditType.value = data.ProductType;
+				EditDisc.value = data.ProductDisc;
 				EditFilePreview.src = data.ProductImage;
 				
 			 })
 			 
 			 
 			  let EName = EditName.value;
-				 let EPrice = EditPrice.value;
+			  let EPrice = EditPrice.value;
+			  let EColor = EditColor.value;
+			  let EBrand = EditBrand.value;
+			  let EMaterial = EditMetarial.value;
+			  let EType = EditType.value;
 				 
 			 
 			  const editBtn = document.getElementById("EditBtn");
@@ -298,7 +393,12 @@ submitButton.addEventListener("click", async function (e) {
 		
           await update(ref(database, `Products/${documentIdToEdit}`), {
             ProductName: EditName.value,
-            ProductPrice: EditPrice.value
+            ProductPrice: EditPrice.value,
+			ProductColor: EditColor.value,
+			ProductBrand: EditBrand.value,
+			ProductMetarial: EditMetarial.value,
+			ProductType: EditType.value,
+			ProductDisc: EditDisc
           });
           alert("Product Edit successfully");
 		   localStorage.clear();
@@ -322,15 +422,16 @@ submitButton.addEventListener("click", async function (e) {
       }
     }
 
-   
-  } catch (error) {
+   } catch (error) {
     alert("Login Error"+error);
     console.error(error);
   }
 }); 
+  
    </script>
 	
-
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  
   
  
 </body>
