@@ -204,6 +204,7 @@ const ProductType = document.getElementById("ProductType");
 const ProductColor = document.getElementById("ProductColor");
 const ProductMetarial = document.getElementById("ProductMetarial");
 const ProductBrand = document.getElementById("ProductBrand");
+const ProductDisc = document.getElementById("ProductDisc");
 const ProductFile = document.getElementById("ProductFile");
 
 
@@ -283,7 +284,8 @@ submitButton.addEventListener("click", async function (e) {
 	  const Color = ProductColor.value;
 	  const Brand = ProductBrand.value;
 	  const Material = ProductMetarial.value;
-	  const Disc = ProductDisc;
+	  const Disc = ProductDisc.value;
+	  const Type = ProductType.value;
 	  const Categories = categorySelect.value;
       let Image = base64Image
 
@@ -295,7 +297,8 @@ submitButton.addEventListener("click", async function (e) {
 		  ProductColor: Color,
 		  ProductBrand: Brand,
 		  ProductMetarial: Material,
-		  ProductDisc: Disc,
+		  ProductDisc: ProductDisc.value,
+		  ProductType: ProductType.value,
 		  ProductCategories: Categories,
           ProductImage: base64Image
         }).then(() => {
