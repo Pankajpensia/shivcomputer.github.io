@@ -23,29 +23,10 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title fs-5" id="exampleModalLabel">Contact Us</h2>
+        <h2 class="modal-title fs-5" id="exampleModalLabel">Product Overview</h2>
         <button type="button" class="btn-close btn-primary" data-bs-dismiss="modal" aria-label="Close">X</button>
       </div>
-      <div class="modal-body">
-	  <center>
-        Please Visit My Shop:- <b>Shiv Computer Kharian</b>
-		
-		<br>
-		<br>
-		
-		
-		
-		<b>OR</b>
-		<br>
-		<br>
-		
-		<a href="tel:9468050693" type="button" class="btn btn-primary">Call Me</a>
-		<br>
-		  <br>
-
-		  <a aria-label="Chat on WhatsApp" type="button" class="btn btn-success" href="https://wa.me/9468050693">Massage Me</a>
-		</center>
-      </div>
+      <div class="modal-body"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
@@ -59,7 +40,10 @@
             <!-- Primary Navigation -->
             <nav class="navbar navbar-expand-lg navbar-dark color-second-bg">
                 <a class="navbar-brand" href="#">Shiv Computer</a>
-                       			<a href="admin/index.html"><button class="btn btn-success" >Admin Login</button></a>
+                       			<a href="admin/index.html"><button class="btn btn-danger" 
+								style="right: 10px;
+								position: absolute;
+								top: 10px;">Admin Login</button></a>
               </nav>
                <!-- !Primary Navigation -->
 
@@ -68,9 +52,6 @@
 
     <!-- start #main-site -->
         <main id="main-site">
-
-          <!-- Owl-carousel -->
-           
           <!-- !Owl-carousel -->
           <!-- !Owl-carousel -->
 
@@ -78,8 +59,13 @@
           <section id="special-price">
             <div class="container	my-4	">
               <h4 class="font-rubik font-size-20">Special Price</h4>
-              <div id="filters" class="button-group text-right font-baloo font-size-16">
+               <div id="filters" class="button-group text-right font-baloo font-size-16">
                 <button class="btn is-checked" data-filter="*">All Brand</button>
+                <button class="btn" data-filter=".Apple">Mobile</button>
+                <button class="btn" data-filter=".Samsung">Computer</button>
+                <button class="btn" data-filter=".Redmi">Camera</button>
+				<button class="btn" data-filter=".Redmi">Laptop</button>
+				<button class="btn" data-filter=".Redmi">Assesries</button>
               </div>
 
               <div class="grid"	style="position: absolute; display:flex;flex-wrap:wrap;" id="ProductSection"></div>
@@ -91,8 +77,9 @@
     <!-- !start #main-site -->
 
     <!-- start #footer -->
-      
+
    
+    <!-- !start #footer -->
     <!-- !start #footer -->
 
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
@@ -106,11 +93,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
 
     <!-- Custom Javascript -->
-    
-	
+    <script src="index.js"></script>
 	<script type="module">
 	 let ProductSection = document.getElementById("ProductSection");
-	
+	 let ModalBody = document.querySelector(".modal-body");
+	 let TopSale = document.getElementById("topsale");
 	  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 	  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
 	  import { getDatabase, ref, onValue, remove, set, push } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
@@ -150,9 +137,12 @@
         const Price = childData.ProductPrice;
 		const Image = childData.ProductImage;
         const documentId = childSnapshot.key;
-        console.log(Name, Price, documentId);
+		const Categories = childData.ProductCategories;
         // Display data in the HTML
-        ProductSection.innerHTML += `<div class="grid-item Apple border" style="display: flex; flex-wrap: wrap;">
+		
+		
+		
+        ProductSection.innerHTML += `<div class="grid-item ${Categories} border" style="display: flex; flex-wrap: wrap;">
                  <div class="item py-2" style="width: 150px; height:">
                   <div class="product font-rale">
                     <a href="#"><img src="${Image}" alt="product1" class="img-fluid"></a>
@@ -168,7 +158,7 @@
                       <div class="price py-2">
                         <span>${Price}</span>
                       </div>
-                      <button type="submit"	id="BuyBtn" class="btn btn-warning font-size-12" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Now</button>
+                      <button type="submit"	id="BuyBtn" data-document-id="${documentId}" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-warning font-size-12" >Buy Now</button>
                     </div>
                   </div>
                 </div>
@@ -177,9 +167,95 @@
                 </div>`;
       });
      
-
+//data-bs-toggle="modal" data-bs-target="#exampleModal"
       // Add click event listener to delete buttons
+           const BuyBtns = document.querySelectorAll("#BuyBtn");
+      BuyBtns.forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+          const documentIdToEdit = event.target.getAttribute("data-document-id");
+          if (documentIdToEdit) {
+             let ProductRef = ref(database, `Products/${documentIdToEdit}`);
+			
+		
+			 onValue(ProductRef, (snapshot)=>{
+			    let data = snapshot.val();
+				
+				console.log(`Name:- ${data.ProductName}`)
+				console.log(`Price:- ${data.ProductPrice}`)
+				console.log(`Image:- ${data.ProductImage}`)
+				
+				ModalBody.innerHTML = `
+				<section class="py-5">
+  <div class="container">
+    <div class="row gx-5">
+      <aside class="col-lg-6">
+        <div class="border rounded-4 mb-3 d-flex justify-content-center">
+          <a data-fslightbox="mygalley" class="rounded-4" target="_blank" data-type="image" href="#">
+            <img style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit" src="${data.ProductImage}" />
+          </a>
+        </div>
+<p>
+            ${data.ProductDiscription}
+          </p>
+      </aside>
+      <main class="col-lg-6">
+        <div class="ps-lg-3">
+          <h4 class="title text-dark">
+           ${data.ProductName}
+          </h4>
+          <div class="d-flex flex-row my-3">
+            <div class="text-warning mb-1 me-2">
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="ms-1">
+                4.5
+              </span>
+            </div>
+            </div>
+
+          <div class="mb-3">
+            <span class="h5">Price:- ${data.ProductPrice}</span>
+           </div>
+
+          
+
+          <div class="row">
+            <dt class="col-3">Type:</dt>
+            <dd class="col-9">${data.ProductType}</dd>
+
+            <dt class="col-3">Color</dt>
+            <dd class="col-9">${data.ProductColor}</dd>
+
+            <dt class="col-3">Material</dt>
+            <dd class="col-9">${data.ProductMetarial}</dd>
+
+            <dt class="col-3">Brand</dt>
+            <dd class="col-9">${data.ProductBrand}</dd>
+          </div>
+
+          <hr />
+          </div>
+         		<a href="tel:9468050693" type="button" class="btn btn-primary">Call Me</a>
+				<a aria-label="Chat on WhatsApp" type="button" class="btn btn-success" href="https://wa.me/9468050693">Massage Me</a>
+		</main>
+    </div>
+  </div>
+</section>
+
+				`
+				
+			 })
+			 
       
+		  }
+		  else{
+		    alert("find some error");
+		  }
+        });
+      });
     });
   
 });
